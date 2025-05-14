@@ -95,7 +95,7 @@ fig.add_shape(
 )
 
 fig.update_layout(
-    title='Promising Young Players (Age < 24, Inside Triangle ≤ 23)',
+    title='Promising Young Players',
     xaxis_title='Age',
     yaxis_title='Potential Rating',
     plot_bgcolor='white',
@@ -110,5 +110,5 @@ fig.show()
 # ----------------------------
 # 8. Output filtered & sorted promising players
 # ----------------------------
-print("Top Promising Players Inside Triangle (Age ≤ 23, Above Line):")
+print("Top Promising Players Inside Triangle:")
 print(promising_sorted[['player_name', 'age', 'potential', 'potential_age_ratio']])
