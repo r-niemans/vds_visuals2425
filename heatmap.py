@@ -3,10 +3,8 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 
-data = # attribute value scores 
-
 # Labels
-players = # [f'Player {i+1}' for i in range(len(data))]
+players = pd.read_csv('Player.csv')
 attributes = # insert attributes here
 
 col_labels = ["General", "Offensive", "Defensive", 
