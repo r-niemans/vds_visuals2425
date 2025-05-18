@@ -58,7 +58,9 @@ fig_bar.update_layout(
     title=f"{our_team}: Average Points Earned Against Opponents (2008–2016)",
     xaxis_title="Opponent Team",
     yaxis_title="Average Points",
-    showlegend=False
+    showlegend=False,
+    plot_bgcolor='white',     # <--- This makes plot area white
+    paper_bgcolor='white'     # <--- This makes surrounding canvas white
 )
 
 # Draw baseline
@@ -108,6 +110,7 @@ for attr in selected_attrs + ['possession', 'shots_on', 'shots_off']:
         name=attr,
         box_visible=False,
         meanline_visible=True,
+        fillcolor='rgba(255,255,255,0.7)',
         line_color='black',
         showlegend=False
     ))
