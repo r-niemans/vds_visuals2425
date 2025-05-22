@@ -40,7 +40,9 @@ df = pd.concat([home, away], ignore_index=True)
 avg_pts = df.groupby("opponent_team_api_id")["points"].mean().reset_index()
 
 # Team Names
-our_team = team.loc[team.team_api_id == TEAM_ID, "team_long_name"].values[0]
+our_team_name = team.loc[team.team_api_id == TEAM_ID, "team_long_name"].values[
+    0
+]
 avg_pts = avg_pts.merge(
     team[["team_api_id", "team_long_name"]],
     left_on="opponent_team_api_id",
@@ -71,7 +73,7 @@ color_map = {
     "Top 5": "limegreen",
     "Bottom 5": "crimson",
     "Others": "grey",
-    "Our Team": "cyan",
+    "Our Team": "deepskyblue",
 }
 
 # ---- BAR CHART ----
@@ -92,7 +94,7 @@ for idx, row in df_final.iterrows():
     )
 
 fig_bar.update_layout(
-    title=f"{our_team}: Average Points Earned Against Opponents (2008–2016)",
+    title=f"{our_team_name}: Average Points Earned Against Opponents (2008–2016)",
     xaxis_title="Opponent Team",
     yaxis_title="Average Points",
     showlegend=False,
@@ -188,15 +190,46 @@ merged_attrs = merged_attrs.merge(
 )
 merged_attrs["classification"] = df_final["classification"]
 
-for attr in selected_attrs + ["possession", "shots_on", "shots_off"]:
-    merged_attrs["attr_name"] = attr
+fig = go.Figure()
 
-    fig = go.Figure()
+
+# Swarm function to avoid overlap
+def generate_swarm_x(y_vals, center_x, spread=0.01, size=10):
+    """Simulates swarm by separating overlapping points along x-axis"""
+    y_sorted = sorted(list(y_vals))
+    x_vals = []
+    y_used = []
+
+    for y in y_vals:
+        # Find nearby points already placed
+        nearby = [x for (x, y0) in zip(x_vals, y_used) if abs(y - y0) < size]
+        if not nearby:
+            x_vals.append(center_x)
+        else:
+            # Spread them out left and right
+            offset = spread * (len(nearby) // 2 + 1)
+            direction = -1 if len(nearby) % 2 == 0 else 1
+            x_vals.append(center_x + direction * offset)
+        y_used.append(y)
+    return x_vals
+
+
+# Main plotting loop
+attrs_all = selected_attrs + ["possession", "shots_on", "shots_off"]
+for attr_idx, attr in enumerate(attrs_all):
+    if attr in ["shots_on", "shots_off"]:
+        display_attr = f"{attr} ×10"
+        merged_y = merged_attrs[attr] * 10
+    else:
+        display_attr = attr
+        merged_y = merged_attrs[attr]
+
+    # Add violin plot
     fig.add_trace(
         go.Violin(
-            y=merged_attrs[attr],
-            x=[attr] * len(merged_attrs),
-            name=attr,
+            y=merged_y,
+            x=[attr_idx] * len(merged_attrs),
+            name=display_attr,
             box_visible=False,
             meanline_visible=True,
             fillcolor="rgba(255,255,255,0.7)",
@@ -205,32 +238,58 @@ for attr in selected_attrs + ["possession", "shots_on", "shots_off"]:
         )
     )
 
-    # Overlay colored scatter dots for each classification
+    # Add simulated swarm points
     for class_label in ["Top 5", "Bottom 5", "Others", "Our Team"]:
         sub = merged_attrs[merged_attrs["classification"] == class_label]
+        sub_y = (
+            sub[attr] * 10 if attr in ["shots_on", "shots_off"] else sub[attr]
+        )
+
+        # Simulate swarm x-values
+        swarm_x = generate_swarm_x(sub_y, center_x=attr_idx)
+
         fig.add_trace(
             go.Scatter(
-                x=[attr] * len(sub),
-                y=sub[attr],
+                x=swarm_x,
+                y=sub_y,
                 mode="markers",
                 marker=dict(
                     color=color_map[class_label],
                     size=10,
+                    opacity=0.7,
                     line=dict(width=1, color="black"),
                 ),
                 name=class_label,
                 text=sub["team_long_name"],
-                hovertemplate="%{text}<br>" + attr + ": %{y:.2f}",
-                showlegend=True if attr == selected_attrs[0] else False,
+                hovertemplate="%{text}<br>" + display_attr + ": %{y:.2f}",
+                showlegend=(attr == selected_attrs[0]),
             )
         )
 
-    fig.update_layout(
-        plot_bgcolor="white",  # Inside the axes
-        paper_bgcolor="white",  # Outside the axes
-        title=f"{our_team}: Distribution of {attr} (2008–2016)",
-        yaxis_title=attr,
-        xaxis=dict(showticklabels=False),
-        legend=dict(title="Classification"),
-    )
-    fig.show()
+# Final layout
+fig.update_layout(
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    title=f"{our_team_name}: Attribute Distributions of league teams (2008–2016)",
+    yaxis=dict(
+        title="Value",
+        range=[0, 100],
+        dtick=20,
+        gridcolor="lightgray",
+        gridwidth=1,
+        griddash="dash",
+    ),
+    xaxis=dict(
+        title="Attributes",
+        tickmode="array",
+        tickvals=list(range(len(attrs_all))),
+        ticktext=[
+            attr if attr not in ["shots_on", "shots_off"] else f"{attr} ×10"
+            for attr in attrs_all
+        ],
+        tickangle=0,
+    ),
+    legend=dict(title="Classification"),
+)
+
+fig.show()
