@@ -3,12 +3,6 @@ from dash import dcc, html, Input, Output
 import plotly.graph_objects as go
 import pandas as pd
 import plotly.io as pio
-from plotly_football_pitch import (
-    make_pitch_figure,
-    PitchDimensions,
-    SingleColourBackground,
-)
-from plotly_football_pitch.pitch_dimensions import PitchDimensions, PitchOrientation
 
 def create_heatmap(df):
     disposable_cols = ['player_api_id', 'player_fifa_api_id', 'date', 'id',
@@ -25,7 +19,7 @@ def create_heatmap(df):
             z=pivot_df.values,
             x=pivot_df.columns,
             y=pivot_df.index,
-            colorscale='Greens',
+            colorscale='Greys',
             colorbar=dict(title='Attribute Value'),
             hovertemplate='Player: %{x}<br>Attribute: %{y}<br>Value: %{z}<extra></extra>'
         )
@@ -101,15 +95,6 @@ app.layout = html.Div([
 
     html.Div(id='tabs-content')
 ])
-
-# app.layout = html.Div([
-#     dcc.Tabs(id="tabs", value='tab-1', children=[
-#         dcc.Tab(label='Scatter plot', value='tab-1'),
-#         dcc.Tab(label='Heatmap', value='tab-2'),
-#         dcc.Tab(label='Bar and Violin Plots', value='tab-3')
-#     ]),
-#     html.Div(id='tabs-content')
-# ])
 
 @app.callback(Output('tabs-content', 'children'), Input('tabs', 'value'))
 def render_content(tab):

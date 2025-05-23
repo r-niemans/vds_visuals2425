@@ -111,6 +111,11 @@ fig.update_layout(
 
 fig.show()
 
+promising_names = promising_sorted['player_name'].tolist()
+with open("data/promising_names.txt", "w") as f:
+    for name in promising_names:
+        f.write(name + "\n")
+
 pio.write_json(fig, "figures/fig_promising.json")
 # 9. Output subset
 print("Top Promising Players Inside Brush (Age as of Jan 1, 2017):")
