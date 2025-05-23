@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.io as pio
+
 
 TEAM_ID = 8558
 BASELINE = 1.1
@@ -293,3 +295,6 @@ fig.update_layout(
 )
 
 fig.show()
+
+pio.write_json(fig_bar, "figures/fig_bar.json")
+pio.write_json(fig, "figures/fig_violin.json")

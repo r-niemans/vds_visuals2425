@@ -3,6 +3,7 @@ import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+import plotly.io as pio
 
 # 1. Load player and attribute data
 player_attributes = pd.read_csv('data/Player_Attributes.csv')
@@ -19,12 +20,18 @@ merged['age'] = ((reference_date - merged['birthday']).dt.total_seconds() / (365
 latest = merged.sort_values('date').groupby('player_api_id').tail(1)
 young = latest[latest['age'] < 24].copy()
 
+cmap = plt.colormaps.get_cmap('RdYlGn')
+
+def rgba_to_str(rgba):
+    r, g, b, a = [int(255 * val) if i < 3 else val for i, val in enumerate(rgba)]
+    return f'rgba({r},{g},{b},{a:.2f})'
+
 # 4. Normalize potential and color map
 min_pot = young['potential'].min()
 max_pot = young['potential'].max()
 young['pot_norm'] = (young['potential'] - min_pot) / (max_pot - min_pot)
 colormap = plt.colormaps.get_cmap('RdYlGn')
-young['color'] = young['pot_norm'].apply(lambda x: f'rgba{colormap(x, bytes=True)}')
+young['color'] = young['pot_norm'].apply(lambda x: rgba_to_str(cmap(x)))
 
 # 5. Regression line to derive opposing slope
 regression_data = young.dropna(subset=['age', 'potential'])
@@ -57,6 +64,7 @@ promising_sorted = promising_players.sort_values(by='potential_age_ratio', ascen
 # 7. Fit regression line for plot
 x_range = np.linspace(young['age'].min(), young['age'].max(), 100)
 y_pred = reg.predict(x_range.reshape(-1, 1))
+
 
 # 8. Plot with Plotly
 fig = go.Figure()
@@ -103,6 +111,7 @@ fig.update_layout(
 
 fig.show()
 
+pio.write_json(fig, "figures/fig_promising.json")
 # 9. Output subset
 print("Top Promising Players Inside Brush (Age as of Jan 1, 2017):")
 print(promising_sorted[['player_name', 'age', 'potential', 'potential_age_ratio']])
