@@ -21,6 +21,7 @@ def create_heatmap(df):
 
     fig = go.Figure(
         data=go.Heatmap(
+            opacity=1.0,
             z=pivot_df.values,
             x=pivot_df.columns,
             y=pivot_df.index,
@@ -42,6 +43,7 @@ def create_heatmap(df):
             tickfont=dict(size=10)
         )
         ,
+        font=dict(color='white'),
         height=800,
         width=800,
         margin=dict(l=20, r=20, t=30, b=30),
@@ -49,37 +51,6 @@ def create_heatmap(df):
         plot_bgcolor='rgba(0,0,0,0)'
     )
 
-    return fig
-
-pitch_figure = make_pitch_figure(
-    dimensions=PitchDimensions(),
-    marking_colour="black",
-    marking_width=2,
-    pitch_background=SingleColourBackground("#81B622"),  # <- this sets the green field
-    figure_width_pixels=1000,
-    figure_height_pixels=600,
-    orientation=PitchOrientation.HORIZONTAL
-)
-def create_pitch_background():
-    fig = go.Figure()
-
-    fig.update_layout(
-        images=[dict(
-            source="https://cdn.creazilla.com/cliparts/21466/soccer-field-clipart-xl.png",
-            xref="paper", yref="paper",
-            x=0, y=1,
-            sizex=1, sizey=1,
-            xanchor="left", yanchor="top",
-            sizing="stretch",
-            opacity=1,
-            layer="below"
-        )],
-        width=1200,
-        height=300,
-        margin=dict(l=0, r=0, t=0, b=0),
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False)
-    )
     return fig
 
 # Importing data for the figures
@@ -94,46 +65,87 @@ fig_violin = pio.read_json("figures/fig_violin.json")
 # Defining the app
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 app.title = "RCD Espanyol Player Insights"
-
 app.layout = html.Div([
+    html.Div([
+        html.Img(src="assets/logo.png", style={
+            'height': '70px',
+            'marginRight': '20px',
+            'marginBottom': '30px',
+        }),
+        html.H1("RCD Espanyol Player Insights", style={
+            'textAlign': 'center',
+            'fontFamily': 'Arial',
+            'marginBottom': '30px',
+            'display': 'inline-block',
+            'verticalAlign': 'middle'
+        })
+    ], style={'display': 'flex', 'alignItems': 'center', 'paddingLeft': '10px'}),
+
     dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Scatter plot', value='tab-1'),
-        dcc.Tab(label='Heatmap', value='tab-2'),
-        dcc.Tab(label='Bar and Violin Plots', value='tab-3')
+        dcc.Tab(label='Promising Players', value='tab-1', style={
+            'fontFamily': 'Arial'
+        }, selected_style={
+            'backgroundColor': '#f0f0f0', 'fontWeight': 'bold'
+        }),
+        dcc.Tab(label='Heatmaps by Position', value='tab-2', style={
+            'fontFamily': 'Arial'
+        }, selected_style={
+            'backgroundColor': '#f0f0f0', 'fontWeight': 'bold'
+        }),
+        dcc.Tab(label='Team Performance Analysis', value='tab-3', style={
+            'fontFamily': 'Arial'
+        }, selected_style={
+            'backgroundColor': '#f0f0f0', 'fontWeight': 'bold'
+        })
     ]),
+
     html.Div(id='tabs-content')
 ])
+
+# app.layout = html.Div([
+#     dcc.Tabs(id="tabs", value='tab-1', children=[
+#         dcc.Tab(label='Scatter plot', value='tab-1'),
+#         dcc.Tab(label='Heatmap', value='tab-2'),
+#         dcc.Tab(label='Bar and Violin Plots', value='tab-3')
+#     ]),
+#     html.Div(id='tabs-content')
+# ])
 
 @app.callback(Output('tabs-content', 'children'), Input('tabs', 'value'))
 def render_content(tab):
     if tab == 'tab-1':
         return html.Div([
             html.H3('Scatter plot'),
-            dcc.Graph(figure=fig_promising),
+            dcc.Graph(figure=fig_promising, style={'display': 'inline-block', 'width': '60%'}),
             html.P("add short explanation/connection the the other plots?")
         ])
     elif tab == 'tab-2':
         return html.Div([
             html.H3('Player Attribute Heatmaps per position'),
             # Pitch background figure shown above the heatmaps
-            dcc.Graph(figure=pitch_figure),
             html.Div([
                 dcc.Graph(figure=create_heatmap(df), style={'display': 'inline-block', 'width': '33%'}),
                 dcc.Graph(figure=create_heatmap(df2), style={'display': 'inline-block', 'width': '33%'}),
                 dcc.Graph(figure=create_heatmap(df3), style={'display': 'inline-block', 'width': '33%'})
             ], style={
-                'display': 'flex',
-                'backgroundRepeat': 'no-repeat',
-                'backgroundPosition': 'center',
-                'padding': '10px',
-                'gap': '10px'
-            })
-        ])
+        'display': 'flex',
+        'position': 'relative',
+        'alignItems': 'center',
+        'width': '100%',
+        'height': '100vh',
+        'backgroundImage': 'url("/assets/soccer_pitch.png")',
+        'backgroundSize': 'cover',
+        'backgroundRepeat': 'no-repeat',
+        'backgroundPosition': 'center',
+        'zIndex': 0,
+        'color': 'white',
+    }),
+], style={'position': 'relative'})
     elif tab == 'tab-3':
         return html.Div([
             html.H3('Bar and Violin plots'),
-            dcc.Graph(figure=fig_bar),
-            dcc.Graph(figure=fig_violin),
+            dcc.Graph(figure=fig_bar, style={'display': 'inline-block', 'width': '70%'}),
+            dcc.Graph(figure=fig_violin,style={'display': 'inline-block', 'width': '70%'}),
             html.P("add explanation still?")
         ])
 
