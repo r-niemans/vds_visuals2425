@@ -87,7 +87,6 @@ flowchart TB
     classDef meta fill:#eeeeee,stroke:#333,stroke-width:1px
     classDef note fill:#ffd54f,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5
 
-
 - `app.py` – Main application script (runs all the figures together in a web application).
 - `bar_and_violin_plot.py` – Generates static bar and violin plots.
 - `bar_and_violin_interactive.py` – Creates interactive versions of bar and violin plots.
