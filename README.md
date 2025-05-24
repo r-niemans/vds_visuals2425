@@ -87,6 +87,7 @@ flowchart TB
     classDef client fill:#fff59d,stroke:#333,stroke-width:1px
     classDef meta fill:#eeeeee,stroke:#333,stroke-width:1px
     classDef note fill:#ffd54f,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5
+```
 
 - `app.py` – Main application script (runs all the figures together in a web application).
 - `bar_and_violin_plot.py` – Generates static bar and violin plots.
@@ -99,7 +100,6 @@ flowchart TB
 - `grouped_players/` – Includes data grouped by player positions and metrics.
 - `assets/` – Contains images. 
 - `VDS2425 Football.zip` – Compressed archive of the project files.
-```
 
 ## Installation 
 **Clone the repository:**
