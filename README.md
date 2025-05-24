@@ -5,6 +5,7 @@ This repository is a data visualization project focused on football (soccer) ana
 
 # Repository Structure 
 
+```mermaid 
 flowchart TB
     %% Data Layer
     subgraph "Data Layer"
@@ -98,6 +99,7 @@ flowchart TB
 - `grouped_players/` – Includes data grouped by player positions and metrics.
 - `assets/` – Contains images. 
 - `VDS2425 Football.zip` – Compressed archive of the project files.
+```
 
 ## Installation 
 **Clone the repository:**
