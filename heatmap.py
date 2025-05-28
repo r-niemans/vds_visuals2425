@@ -1,10 +1,10 @@
-import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 import plotly.graph_objects as go
 import re
 from collections import defaultdict
 import plotly.io as pio
+
+pio.renderers.default = 'browser'
 
 players = pd.read_csv('data/Player.csv')
 player_atts = pd.read_csv('data/Player_Attributes.csv')
@@ -17,7 +17,7 @@ player_atts['potential_rating_ratio'] = ((player_atts['potential'] / player_atts
 
 teams[teams['team_long_name']=='RCD Espanyol']
 
-matches['date'] = pd.to_datetime(matches['date'])
+matches['date'] = pd.to_datetime(matches['date'], dayfirst=True)
 rcde_matches = matches[matches['home_team_api_id']== 8558]
 
 filtered_players_rcde = [col for col in rcde_matches.columns if re.match(r'home_player_\d+$', col)]
@@ -104,7 +104,7 @@ bk_player_names = roles['BK']
 mf_player_names = roles['MF']
 fw_player_names = roles['FW']
 
-# initalize dataframes to base the heatmaps on
+# initalize dataframes to base the heatmaps on, for only the most promising players
 bk_players = promising_players[promising_players['player_name'].isin(bk_player_names)]
 mf_players = promising_players[promising_players['player_name'].isin(mf_player_names)]
 fw_players = promising_players[promising_players['player_name'].isin(fw_player_names)]
@@ -112,8 +112,6 @@ fw_players = promising_players[promising_players['player_name'].isin(fw_player_n
 fw_players.to_csv("fw_players.csv", index=False)
 mf_players.to_csv("mf_players.csv", index=False)
 bk_players.to_csv("bk_players.csv", index=False)
-
-pio.renderers.default = "notebook_connected"
 
 def create_heatmap(df, position):
     bk = [
@@ -149,8 +147,6 @@ def create_heatmap(df, position):
     pivot_df = df.set_index('player_name')[['potential_rating_ratio'] + attributes]
     pivot_df = pivot_df.sort_values(by='potential_rating_ratio', ascending=False)
 
-    pio.renderers.default = "notebook_connected"
-
     fig = go.Figure(
         data=go.Heatmap(
             z=pivot_df.values,
@@ -161,6 +157,7 @@ def create_heatmap(df, position):
             hovertemplate='Player: %{y}<br>Attribute: %{x}<br>Value: %{z}<extra></extra>'
         )
     )
+    font_color = 'black' if __name__ == "__main__" else 'white'
 
     fig.update_layout(
         xaxis=dict(
@@ -174,7 +171,7 @@ def create_heatmap(df, position):
             tickfont=dict(size=10)
         )
         ,
-        font=dict(color='white'),
+        font=dict(color=font_color),
         height=800,
         width=800,
         margin=dict(l=20, r=20, t=30, b=30),
@@ -184,7 +181,7 @@ def create_heatmap(df, position):
 
     return fig
 
-
-create_heatmap(fw_players, 'fw')
-create_heatmap(bk_players, 'bk')
-create_heatmap(mf_players, 'mf')
+if __name__ == '__main__':
+    create_heatmap(fw_players, 'fw').show()
+    create_heatmap(bk_players, 'bk').show()
+    create_heatmap(mf_players, 'mf').show()

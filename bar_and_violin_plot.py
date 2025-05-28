@@ -8,13 +8,13 @@ BASELINE = 1.1
 TOP_N = 5
 
 
-matches = pd.read_csv("Match.csv")
-match_possesion = pd.read_csv("Match_Possesion.csv")
-match_shots_on = pd.read_csv("Match_Shots_On.csv")
-match_shots_off = pd.read_csv("Match_Shots_Off.csv")
+matches = pd.read_csv("data/Match.csv")
+match_possesion = pd.read_csv("data/Match_Possesion.csv")
+match_shots_on = pd.read_csv("data/Match_Shots_On.csv")
+match_shots_off = pd.read_csv("data/Match_Shots_Off.csv")
 
-team = pd.read_csv("Team.csv")
-team_attr = pd.read_csv("Team_Attributes.csv")
+team = pd.read_csv("data/Team.csv")
+team_attr = pd.read_csv("data/Team_Attributes.csv")
 
 
 # Points function

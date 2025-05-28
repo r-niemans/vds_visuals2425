@@ -108,7 +108,7 @@ flowchart TB
    cd vds_visuals2425
 ```
 ## Usage
-To run the application and therefore view and interact with all the visuals in one place:
+To run the application and therefore view and interact with all the visuals in one place. It is recommended to set your browser zoom to 67% to view the soccer pitch properly.
 ```bash
 python app.py
 ```

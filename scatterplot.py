@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import plotly.io as pio
 
+pio.renderers.default = 'browser'
+
 # 1. Load player and attribute data
 player_attributes = pd.read_csv('data/Player_Attributes.csv')
 players = pd.read_csv('data/Player.csv')

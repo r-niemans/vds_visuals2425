@@ -85,7 +85,7 @@ def render_content(tab):
     elif tab == 'tab-3':
         return html.Div([
             html.H3('Bar and Violin plots'),
-            dcc.Graph(figure=fig_bar, style={'display': 'inline-block', 'width': '70%'}),
+            dcc.Graph(figure=fig_bar, style={'display': 'inline-block', 'width': '70%','margin-bottom': '40px'}),
             dcc.Graph(figure=fig_violin,style={'display': 'inline-block', 'width': '70%'})
         ])
 
